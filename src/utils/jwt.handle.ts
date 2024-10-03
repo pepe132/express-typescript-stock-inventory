@@ -1,5 +1,5 @@
 
-import { sign} from "jsonwebtoken";
+import { sign, verify} from "jsonwebtoken";
 
 const jwt_secret = process.env.JWT_SECRET || 'token.3eljwt'
 
@@ -13,6 +13,9 @@ export const generateToken = (id:string) => {
 }
 
 
-// export const verifyToken = async () =>{
+export const verifyToken = async (jwt:string) =>{
+    const isJwtOk = verify(jwt,jwt_secret)
+    
+    return isJwtOk;
 
-// }
+}

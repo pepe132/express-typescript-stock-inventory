@@ -39,6 +39,7 @@ export const loginUser = async (_req:Request,res:Response) => {
 
     const user_resp = _req.body;
 
+
     const check_is_user = await UsersModel.findOne({where:{email:user_resp.email}})
     if (!check_is_user) {
         return res.status(500).json({"message":"No se encuentra el servidor"})
@@ -46,6 +47,9 @@ export const loginUser = async (_req:Request,res:Response) => {
 
     const passwordHash = check_is_user.user_password
     const is_correct = await verified(user_resp.user_password,passwordHash)
+
+    console.log(check_is_user.user_id);
+    
 
     const token = generateToken(check_is_user.user_id);
 
