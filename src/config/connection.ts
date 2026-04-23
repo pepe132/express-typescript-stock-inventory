@@ -4,36 +4,48 @@ import { CategoriesModel } from "../models/categories.model";
 import { RolesModel } from "../models/role.model";
 import { VendorsModel } from "../models/vendors.model";
 import { UsersModel } from "../models/users.model";
+import { InventoryMovement } from "../models/inventory_movements";
+import { Inventory } from "../models/inventory.model";
+import { SaleItem } from "../models/saleItem.model";
+import { Sale } from "../models/sales.model";
+import { Warehouse } from "../models/warehouse.model";
+import 'dotenv/config';
 
 
-const sequelize = new Sequelize('Prueba','sa','Joseelzully3#',{
-    dialect: 'mssql',
-    host: "JOSEG",
+
+const sequelize = new Sequelize(
+  process.env.DB_DATABASE as string,
+  process.env.DB_USER as string,
+  process.env.DB_PASSWORD as string,
+  {
+    dialect: 'mssql' ,
+    host: process.env.BD_HOST,
     port:1433,
-    dialectOptions: {
-      options: {
-        // Configura la autenticación de Windows
-        trustedConnection: true,
-        encrypt: false, // Utiliza encryption si es necesario
-      },
-    },
     models:[
         ProductModel,
         CategoriesModel,
         RolesModel,
         VendorsModel,
-        UsersModel
+        UsersModel,
+        InventoryMovement,
+        Inventory,
+        SaleItem,
+        Sale,
+        Warehouse
     ]
   });
 
 async function connectionDB() {
-    sequelize.authenticate()
-    .then(() => {
+    try {
+      await sequelize.authenticate();
       console.log('Conexión establecida correctamente.');
-    })
-    .catch(err => {
-      console.error('No se pudo conectar a la base de datos:', err);
-    });
+
+      await sequelize.sync(); 
+
+      console.log('Tablas sincronizadas');
+    } catch (err) {
+       console.error('No se pudo conectar a la base de datos:', err);
+    }
 
 }
 

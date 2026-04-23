@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { encrypt, verified } from "../utils/bcrypt.handle";
 import { UsersModel } from "../models/users.model";
 import { registerNewUserService } from "../services/user.services";
-import { generateToken } from "../utils/jwt.handle";
+// import { generateToken } from "../utils/jwt.handle";
 
 export const registerUser = async (_req:Request,res:Response) => {
 
@@ -51,14 +51,14 @@ export const loginUser = async (_req:Request,res:Response) => {
     console.log(check_is_user.user_id);
     
 
-    const token = generateToken(check_is_user.user_id);
+    // const token = generateToken(check_is_user.user_id);
 
     if(!is_correct){
         return res.status(500).json({"message":"Contraseña incorrecta"})
     } else {
 
         const data = {
-            token,
+            // token,
             user:check_is_user
 
         }
