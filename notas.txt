@@ -1,19 +1,14 @@
 SE REQUIERE INSTALAR ESTO
-npm init -y
-npm install typescript -D
-npm run tsc --init # esto es para pasar las dependencias de typescript a javascript
-nmp install npm i --save-dev @types/express
+1. npm init -y
+2. npm install typescript -D
+3. npm install ts-node -D
+4. npm i nodemon
+5. npx tsc --init # esto es para pasar las dependencias de typescript a javascript y crear nuestro tsconfig
+
+6. Despues vienen todos los install y ver si tiene @types los siguientes librerias
 
 npm install ts-node-dev -D --esto es para poder escuchar y compilar los cambios de typescript a javascript
-
-npm WARN deprecated @types/mongoose@5.11.97: Mongoose publishes its own types, so you do not need to install this package.
-npm WARN deprecated @types/dotenv@8.2.0: This is a stub types definition. dotenv provides its own type definitions, so you do not need this
-
 npm install --save-dev @types/node @types/validator
-npm install sequelize reflect-metadata sequelize-typescript
-
-install y ver si tiene @types los siguinetes
-
 express
 cors
 dotenv
@@ -22,6 +17,7 @@ mongoose
 bcryptjs- hashing 
 jsonwebtoken
 
+npm WARN deprecated @types/dotenv@8.2.0: This is a stub types definition. dotenv provides its own type definitions, so you do not need this
 # TABLAS QUE TENEMOS QUE CREAR
 
 Branches- Ready

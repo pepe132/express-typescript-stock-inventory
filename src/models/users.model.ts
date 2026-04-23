@@ -1,19 +1,22 @@
 import { Table,Model,Column,DataType, ForeignKey, BelongsTo} from "sequelize-typescript";
 import { RolesModel } from "./role.model";
+import { VendorsModel } from "./vendors.model";
 
 @Table({
-    timestamps:false,
+    timestamps: true,
+    paranoid: true,
+    underscored: true,
     tableName:"Users"
 })
 
 export class UsersModel extends Model {
 
     @Column({
-        type:DataType.STRING,
+        type:DataType.INTEGER,
         primaryKey: true,
-        allowNull:false
+        autoIncrement: true
     })
-    user_id!:string
+    user_id!:number
 
     @Column({
         type:DataType.STRING,
@@ -28,11 +31,19 @@ export class UsersModel extends Model {
         
     })
     user_password!:string
+
+    @Column({
+        type:DataType.STRING,
+        allowNull:false,
+        unique: true
+        
+    })
+    email!:string
     
     @ForeignKey(() => RolesModel)
   
     @Column({
-        type:DataType.NUMBER,
+        type:DataType.INTEGER,
         allowNull:false,
         
     })
@@ -41,12 +52,13 @@ export class UsersModel extends Model {
     @BelongsTo(() => RolesModel)
     role!: RolesModel;
 
-    @Column({
-        type:DataType.STRING,
-        allowNull:false,
-        
-    })
-    email!:string
+    @ForeignKey(() => VendorsModel)
+    @Column
+    company_id!: number;
+
+    @BelongsTo(() => VendorsModel)
+    company!: VendorsModel;
+
 
 
 }

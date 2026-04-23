@@ -1,19 +1,22 @@
-import { Table,Model,Column,DataType, HasMany} from "sequelize-typescript";
+import { Table,Model,Column,DataType, HasMany, ForeignKey} from "sequelize-typescript";
 import { ProductModel } from "./products.model";
+import { VendorsModel } from "./vendors.model";
 
 @Table({
-    timestamps:false,
+    timestamps: true,
+    paranoid: true,
+    underscored: true,
     tableName:"Categories"
 })
 
 export class CategoriesModel extends Model {
 
     @Column({
-        type:DataType.STRING,
+        type:DataType.INTEGER,
         primaryKey: true,
-        allowNull:false
+        autoIncrement:true
     })
-    category_id!:string
+    category_id!:number
 
     @Column({
         type:DataType.STRING,
@@ -27,6 +30,10 @@ export class CategoriesModel extends Model {
         allowNull:false
     })
     status_category!:boolean
+
+    @ForeignKey(() => VendorsModel)
+    @Column
+    company_id!: number;
 
     @HasMany(() => ProductModel)
     products!: ProductModel[];

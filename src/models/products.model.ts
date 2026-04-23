@@ -1,20 +1,23 @@
 import { Table,Model,Column,DataType, ForeignKey, BelongsTo} from "sequelize-typescript";
 import { CategoriesModel } from "./categories.model";
+import { VendorsModel } from "./vendors.model";
 
 @Table({
-    timestamps:false,
+    timestamps: true,
+    paranoid: true,
+    underscored: true,
     tableName:"Products"
 })
 
 export class ProductModel extends Model {
 
     @Column({
-        type:DataType.STRING,
+        type:DataType.INTEGER,
         primaryKey: true,
-        allowNull:false,
+        autoIncrement:true,
         
     })
-    product_id!:string
+    product_id!:number
 
     @Column({
         type:DataType.STRING,
@@ -23,23 +26,31 @@ export class ProductModel extends Model {
     })
     product_name!:string
 
-    @ForeignKey(() => CategoriesModel)
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-
-        
-    })
-    category_id!: string;
-
-    @BelongsTo(() => CategoriesModel)
-    category!: CategoriesModel;
 
     @Column({
-        type:DataType.STRING,
+        type:DataType.TEXT,
         allowNull:false
     })
-    details!:string
+    description!:string
+
+    @Column({
+        type:DataType.FLOAT,
+        allowNull:false
+    })
+    price!:number
+
+    @Column({
+        type:DataType.FLOAT,
+        allowNull:false
+    })
+    cost!:number
+
+     @Column({
+        type:DataType.STRING,
+        allowNull:false,
+        unique:true
+    })
+    sku!:string
 
     @Column({
         type:DataType.BOOLEAN,
@@ -47,17 +58,27 @@ export class ProductModel extends Model {
     })
     status_product!:boolean
 
-    @Column({
-        type:DataType.STRING,
-        allowNull:false
-    })
-    product_code!:string
+
 
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
-    category_name!: string; 
+    category_name!: string;
+
+    @ForeignKey(() => CategoriesModel)
+    @Column
+    category_id!: number;
+
+    @BelongsTo(() => CategoriesModel)
+    category!: CategoriesModel;
+
+    @ForeignKey(() => VendorsModel)
+    @Column
+    company_id!: number;
+
+    @BelongsTo(() => VendorsModel)
+    company!: VendorsModel;
 
 
 

@@ -1,45 +1,30 @@
-import { Table,Model,Column,DataType} from "sequelize-typescript";
+import { Table,Model,Column,DataType, HasMany} from "sequelize-typescript";
+import { UsersModel } from "./users.model";
 
 @Table({
-    timestamps:false,
-    tableName:"Vendors"
+    timestamps: true,
+    paranoid: true,
+    underscored: true,
+    tableName:"Companies"
 })
 
 export class VendorsModel extends Model {
 
     @Column({
-        type:DataType.STRING,
+        type:DataType.INTEGER,
         primaryKey: true,
-        allowNull:false
+        autoIncrement: true
     })
-    vendor_id!:string
+    company_id!:number
 
     @Column({
         type:DataType.STRING,
         allowNull:false,
         
     })
-    vendor_name!:string
+    company_name!:string
 
-    @Column({
-        type:DataType.STRING,
-        allowNull:false
-    })
-    vendor_phone!:string
-
-    @Column({
-        type:DataType.STRING,
-        allowNull:false,
-        
-    })
-    vendor_email!:string
-
-    @Column({
-        type:DataType.STRING,
-        allowNull:false,
-        
-    })
-    vendor_address!:string
-
+    @HasMany(() => UsersModel)
+    users!: UsersModel[];
 
 }
