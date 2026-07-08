@@ -1,25 +1,19 @@
 import { Response } from "express";
-import { ProductService } from "../services/product.service";
+import { WarehouseService } from "../services/warehouse.service";
 import handleHttp from "../utils/error.handle";
 import { RequestWithUser } from "../middlewares/auth.middleware";
 
-export class ProductController {
+export class WarehouseController {
 
   static async getAll(req: RequestWithUser, res: Response) {
     try {
       const companyId = req.user?.company_id;
       if (!companyId) return res.status(401).json({ message: "No autorizado" });
 
-      const filters = {
-        category_id: req.query.category_id ? Number(req.query.category_id) : undefined,
-        name: req.query.name as string,
-        sku: req.query.sku as string,
-      };
-
-      const response = await ProductService.getProducts(companyId, filters);
+      const response = await WarehouseService.getWarehousesByCompany(companyId);
       res.status(200).json(response);
     } catch (error: any) {
-      handleHttp(res, error.message || "Error al obtener productos", error);
+      handleHttp(res, error.message || "Error al obtener almacenes", error);
     }
   }
 
@@ -29,10 +23,10 @@ export class ProductController {
       if (!companyId) return res.status(401).json({ message: "No autorizado" });
 
       const data = { ...req.body, company_id: companyId };
-      const response = await ProductService.createProduct(data);
+      const response = await WarehouseService.createWarehouse(data);
       res.status(201).json(response);
     } catch (error: any) {
-      handleHttp(res, error.message || "Error al crear producto", error);
+      handleHttp(res, error.message || "Error al crear almacén", error);
     }
   }
 
@@ -42,10 +36,10 @@ export class ProductController {
       const { id } = req.params;
       if (!companyId) return res.status(401).json({ message: "No autorizado" });
 
-      const response = await ProductService.getProductById(Number(id), companyId);
+      const response = await WarehouseService.getWarehouseById(Number(id), companyId);
       res.status(200).json(response);
     } catch (error: any) {
-      handleHttp(res, error.message || "Error al obtener producto", error);
+      handleHttp(res, error.message || "Error al obtener almacén", error);
     }
   }
 
@@ -55,10 +49,10 @@ export class ProductController {
       const { id } = req.params;
       if (!companyId) return res.status(401).json({ message: "No autorizado" });
 
-      const response = await ProductService.updateProduct(Number(id), companyId, req.body);
+      const response = await WarehouseService.updateWarehouse(Number(id), companyId, req.body);
       res.status(200).json(response);
     } catch (error: any) {
-      handleHttp(res, error.message || "Error al actualizar producto", error);
+      handleHttp(res, error.message || "Error al actualizar almacén", error);
     }
   }
 
@@ -68,10 +62,10 @@ export class ProductController {
       const { id } = req.params;
       if (!companyId) return res.status(401).json({ message: "No autorizado" });
 
-      const response = await ProductService.deleteProduct(Number(id), companyId);
+      const response = await WarehouseService.deleteWarehouse(Number(id), companyId);
       res.status(200).json(response);
     } catch (error: any) {
-      handleHttp(res, error.message || "Error al eliminar producto", error);
+      handleHttp(res, error.message || "Error al eliminar almacén", error);
     }
   }
 }

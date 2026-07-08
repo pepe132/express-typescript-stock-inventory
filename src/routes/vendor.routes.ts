@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { insertVendor, listVendors } from "../controllers/vendor.controller";
+import { CompanyController } from "../controllers/vendor.controller";
 
-const VendorsRoutes = Router();
+const router = Router();
 
-VendorsRoutes.get('/all',listVendors);
-VendorsRoutes.post('/insert_vendor',insertVendor)
+// Estas rutas podrían requerir un Token de "Super Admin" en el futuro
+// Por ahora son abiertas para permitir el setup inicial de empresas
+router.get("/", CompanyController.getAll);
+router.post("/", CompanyController.create);
+router.get("/:id", CompanyController.getById);
+router.put("/:id", CompanyController.update);
 
-export default VendorsRoutes;
+export default router;

@@ -3,6 +3,8 @@ export type paths = {
     categories:string,
     roles:string,
     vendors:string,
-    users:string
-    
+    users:string,
+    auth: string,
+    warehouses: string,
+    inventory: string
 };

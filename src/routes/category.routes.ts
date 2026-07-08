@@ -1,15 +1,17 @@
 import { Router } from "express";
-import { deleteCategory, insertCategory, listCategories, updateCategory } from "../controllers/category.controller";
-import { checkJwt } from "../middlewares/session";
+import { CategoryController } from "../controllers/category.controller";
+import { authMiddleware, injectUser } from "../middlewares/auth.middleware";
 
+const router = Router();
 
-const CategoryRoutes = Router();
+// Todas las rutas de categorías requieren autenticación
+router.use(authMiddleware);
+router.use(injectUser);
 
-CategoryRoutes.get('/all',checkJwt,listCategories)
-CategoryRoutes.post('/insert',checkJwt,insertCategory)
-CategoryRoutes.put('/:id',checkJwt,updateCategory)
-CategoryRoutes.delete('/:id',checkJwt,deleteCategory)
+router.get("/", CategoryController.getAll);
+router.post("/", CategoryController.create);
+router.get("/:id", CategoryController.getById);
+router.put("/:id", CategoryController.update);
+router.delete("/:id", CategoryController.delete);
 
-
-export default CategoryRoutes;
-
+export default router;

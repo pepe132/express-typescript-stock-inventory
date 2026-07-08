@@ -1,54 +1,85 @@
-import {  Response } from "express"
-import { Category } from "../interfaces/category.interface"
-import { CategoriesModel } from "../models/categories.model"
-import crypto from 'crypto';
+import { CategoriesModel } from "../models/categories.model";
+import { CreateCategoryDTO, UpdateCategoryDTO } from "../interfaces/category.interface";
 
-export const listCategoriesService = async() => {
-    const responseList = await CategoriesModel.findAll()
-        return responseList
+export class CategoryService {
+  
+  static async createCategory(data: CreateCategoryDTO) {
+    // Validar nombre único por empresa
+    const existing = await CategoriesModel.findOne({
+      where: { 
+        category_name: data.category_name, 
+        company_id: data.company_id 
+      }
+    });
 
-}
-
-export const insertCategoriesService = async(category: Category, res:Response) => {
-    const name_category  = category.category_name.toUpperCase()
-    const id_category  = crypto.randomBytes(16).toString('hex')
-
-    const categoriaDB = await CategoriesModel.findOne({where: {category_name:name_category }})
-
-    if (categoriaDB) {//si categoria db no es nula
-        return res.status(400).json({
-            msg:"La categoria ya existe"
-        }) 
+    if (existing) {
+      throw new Error("Ya existe una categoría con este nombre en su empresa");
     }
 
-    const data = {
-        ...category,
-        category_id:id_category,
-        category_name:name_category
+    const newCategory = await CategoriesModel.create({
+      category_name: data.category_name,
+      company_id: data.company_id,
+      status_category: true
+    });
+
+    return newCategory;
+  }
+
+  static async getCategoriesByCompany(companyId: number) {
+    return await CategoriesModel.findAll({
+      where: { company_id: companyId }
+    });
+  }
+
+  static async getCategoryById(categoryId: number, companyId: number) {
+    const category = await CategoriesModel.findOne({
+      where: { category_id: categoryId, company_id: companyId }
+    });
+
+    if (!category) {
+      throw new Error("Categoría no encontrada");
     }
 
-    const responseInsert = await CategoriesModel.create(data);
-    return responseInsert
-    
-}
+    return category;
+  }
 
-export const updateCategoriesService = async(id:string,data:object) => {
+  static async updateCategory(categoryId: number, companyId: number, data: UpdateCategoryDTO) {
+    const category = await CategoriesModel.findOne({
+      where: { category_id: categoryId, company_id: companyId }
+    });
 
-    const responseUpdate = await CategoriesModel.update(
-        data,
-        { where:{category_id:id} }
-    )
+    if (!category) {
+      throw new Error("Categoría no encontrada");
+    }
 
-    return responseUpdate
-    
-}
-
-export const deleteCategoriesService = async(id:string) => {
-    const responseDelete = await CategoriesModel.destroy({
-        where: {
-            category_id:id
+    // Si se intenta cambiar el nombre, validar que no choque con otra
+    if (data.category_name && data.category_name !== category.category_name) {
+      const existing = await CategoriesModel.findOne({
+        where: { 
+          category_name: data.category_name, 
+          company_id: companyId 
         }
-    })
+      });
+      if (existing) {
+        throw new Error("Ya existe otra categoría con este nombre");
+      }
+    }
 
-    return responseDelete;
+    await category.update(data);
+    return category;
+  }
+
+  static async deleteCategory(categoryId: number, companyId: number) {
+    const category = await CategoriesModel.findOne({
+      where: { category_id: categoryId, company_id: companyId }
+    });
+
+    if (!category) {
+      throw new Error("Categoría no encontrada");
+    }
+
+    // Nota: El soft delete funcionará por el paranoid: true en el modelo
+    await category.destroy();
+    return { message: "Categoría eliminada correctamente" };
+  }
 }

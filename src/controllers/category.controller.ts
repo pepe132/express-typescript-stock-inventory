@@ -1,62 +1,71 @@
-import { Request, RequestHandler, Response} from "express";
+import { Response } from "express";
+import { CategoryService } from "../services/category.services";
 import handleHttp from "../utils/error.handle";
-import { deleteCategoriesService, insertCategoriesService, listCategoriesService, updateCategoriesService } from "../services/category.services";
+import { RequestWithUser } from "../middlewares/auth.middleware";
 
-export const listCategories: RequestHandler = async (_req: Request,res:Response) => {
+export class CategoryController {
+
+  static async getAll(req: RequestWithUser, res: Response) {
     try {
-        const response = await listCategoriesService()
-        return res.status(200).json(response)
-    } catch (error:any) {
-        handleHttp(res,'ERROR_LIST_CATEGORIES',error)
+      const companyId = req.user?.company_id;
+      if (!companyId) return res.status(401).json({ message: "No autorizado" });
+
+      const response = await CategoryService.getCategoriesByCompany(companyId);
+      res.status(200).json(response);
+    } catch (error: any) {
+      handleHttp(res, error.message || "Error al obtener categorías", error);
     }
+  }
 
-}
-
-export const insertCategory: RequestHandler = async (_req: Request,res:Response) => {
+  static async create(req: RequestWithUser, res: Response) {
     try {
+      const companyId = req.user?.company_id;
+      if (!companyId) return res.status(401).json({ message: "No autorizado" });
 
-        await insertCategoriesService(_req.body,res)
-        return res.status(200).json({"message":"La categoria se ha creado con éxito"})
-        
-    } catch (error:any) {
-        handleHttp(res,'ERROR_INSERT_PRODUCT(S)',error)
-        
+      const data = { ...req.body, company_id: companyId };
+      const response = await CategoryService.createCategory(data);
+      res.status(201).json(response);
+    } catch (error: any) {
+      handleHttp(res, error.message || "Error al crear categoría", error);
     }
-}
+  }
 
-
-export const updateCategory : RequestHandler = async (_req: Request , res: Response) => {
+  static async getById(req: RequestWithUser, res: Response) {
     try {
+      const companyId = req.user?.company_id;
+      const { id } = req.params;
+      if (!companyId) return res.status(401).json({ message: "No autorizado" });
 
-        const {id} = _req.params
-        let {category_name:category, status_category} =_req.body;
-
-        const category_name = category.toUpperCase();
-
-        const data = {
-            category_name,
-            status_category
-        }
-
-        await updateCategoriesService(id,data);
-
-        return res.status(200).json({"message":"El registro se ha actualizado"})
-        
-    } catch (error) {
-        handleHttp(res,'ERROR_UPDATE_CATEGORY',error)
-
-     
+      const response = await CategoryService.getCategoryById(Number(id), companyId);
+      res.status(200).json(response);
+    } catch (error: any) {
+      handleHttp(res, error.message || "Error al obtener categoría", error);
     }
-}
+  }
 
-export const deleteCategory : RequestHandler = async(_req: Request , res: Response) => {
+  static async update(req: RequestWithUser, res: Response) {
     try {
-        const {id} = _req.params
-        await deleteCategoriesService(id)
-        return res.status(200).json({"message":"El registro se ha eliminado"})
+      const companyId = req.user?.company_id;
+      const { id } = req.params;
+      if (!companyId) return res.status(401).json({ message: "No autorizado" });
 
-        
-    } catch (error) {
-        handleHttp(res,'ERROR_DELETE_CATEGORY',error)
+      const response = await CategoryService.updateCategory(Number(id), companyId, req.body);
+      res.status(200).json(response);
+    } catch (error: any) {
+      handleHttp(res, error.message || "Error al actualizar categoría", error);
     }
+  }
+
+  static async delete(req: RequestWithUser, res: Response) {
+    try {
+      const companyId = req.user?.company_id;
+      const { id } = req.params;
+      if (!companyId) return res.status(401).json({ message: "No autorizado" });
+
+      const response = await CategoryService.deleteCategory(Number(id), companyId);
+      res.status(200).json(response);
+    } catch (error: any) {
+      handleHttp(res, error.message || "Error al eliminar categoría", error);
+    }
+  }
 }
